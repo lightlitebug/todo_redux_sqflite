@@ -34,12 +34,35 @@ TodoListState getTodoListFailedReducer(
   );
 }
 
+/////////////////////////////////////////////////////////////////
+/// Add todo related reducers
+/////////////////////////////////////////////////////////////////
 TodoListState addTodoReducer(
   TodoListState state,
   AddTodoAction action,
 ) {
-  final newTodos = [...state.todos, Todo(todoDesc: action.todoDesc)];
-  return state.copyWith(todos: newTodos);
+  return state.copyWith(status: TodoListStatus.loading);
+}
+
+TodoListState addTodoSucceededReducer(
+  TodoListState state,
+  AddTodoSucceededAction action,
+) {
+  final newTodos = [action.todo, ...state.todos];
+  return state.copyWith(
+    status: TodoListStatus.success,
+    todos: newTodos,
+  );
+}
+
+TodoListState addTodoFailedReducer(
+  TodoListState state,
+  AddTodoFailedAction action,
+) {
+  return state.copyWith(
+    status: TodoListStatus.failure,
+    error: action.error,
+  );
 }
 
 TodoListState toggleTodoReducer(
@@ -98,6 +121,12 @@ Reducer<TodoListState> todoListReducer = combineReducers<TodoListState>([
     getTodoListFailedReducer,
   ),
   TypedReducer<TodoListState, AddTodoAction>(addTodoReducer),
+  TypedReducer<TodoListState, AddTodoSucceededAction>(
+    addTodoSucceededReducer,
+  ),
+  TypedReducer<TodoListState, AddTodoFailedAction>(
+    addTodoFailedReducer,
+  ),
   TypedReducer<TodoListState, ToggleTodoAction>(toggleTodoReducer),
   TypedReducer<TodoListState, EditTodoAction>(editTodoReducer),
   TypedReducer<TodoListState, DeleteTodoAction>(deleteTodoReducer),

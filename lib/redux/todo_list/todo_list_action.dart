@@ -50,14 +50,57 @@ ThunkAction<AppState> getTodoListAndDispatch() {
   };
 }
 
+/////////////////////////////////////////////////////////////////
+/// Add todo related actions
+/////////////////////////////////////////////////////////////////
+
 class AddTodoAction {
-  final String todoDesc;
-  AddTodoAction({
-    required this.todoDesc,
+  AddTodoAction();
+
+  @override
+  String toString() => 'AddTodoAction()';
+}
+
+class AddTodoSucceededAction {
+  final Todo todo;
+  AddTodoSucceededAction({
+    required this.todo,
   });
 
   @override
-  String toString() => 'AddTodoAction(todoDesc: $todoDesc)';
+  String toString() => 'AddTodoSucceededAction(todo: $todo)';
+}
+
+class AddTodoFailedAction {
+  final CustomError error;
+  AddTodoFailedAction({
+    required this.error,
+  });
+
+  @override
+  String toString() => 'AddTodoFailedAction(error: $error)';
+}
+
+ThunkAction<AppState> addTodoAndDispatch(String todoDesc) {
+  return (Store<AppState> store) async {
+    store.dispatch(AddTodoAction());
+
+    try {
+      final now = DateTime.now();
+      final todo = Todo(
+        todoDesc: todoDesc,
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      final Todo newTodo = await TodosRepository.instance.addTodo(todo);
+      store.dispatch(AddTodoSucceededAction(todo: newTodo));
+    } on CustomError catch (error) {
+      store.dispatch(AddTodoFailedAction(error: error));
+    }
+  };
 }
 
 class EditTodoAction {
