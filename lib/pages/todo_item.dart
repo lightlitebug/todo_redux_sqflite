@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:intl/intl.dart';
 
 import '../models/todo_model.dart';
 import '../redux/app_state.dart';
@@ -32,18 +33,23 @@ class TodoItem extends StatelessWidget {
           return Checkbox(
             value: todo.completed,
             onChanged: (bool? checked) {
-              vm.toggleTodo(todo.id);
+              vm.toggleTodo(todo);
             },
           );
         },
       ),
       title: Text(todo.todoDesc),
+      subtitle: Text(
+        'last updated: ${DateFormat.yMd().add_Hms().format(todo.updatedAt)}',
+        textScaleFactor: 0.9,
+        style: const TextStyle(color: Colors.grey),
+      ),
     );
   }
 }
 
 class _ToggleViewModel extends Equatable {
-  final void Function(String id) toggleTodo;
+  final void Function(Todo todo) toggleTodo;
   const _ToggleViewModel({
     required this.toggleTodo,
   });
@@ -53,8 +59,8 @@ class _ToggleViewModel extends Equatable {
 
   static fromStore(Store<AppState> store) {
     return _ToggleViewModel(
-      toggleTodo: (String id) => store.dispatch(
-        ToggleTodoAction(id: id),
+      toggleTodo: (Todo todo) => store.dispatch(
+        toggleTodoAndDispatch(todo),
       ),
     );
   }
@@ -113,7 +119,7 @@ class _ConfirmEditDialogState extends State<ConfirmEditDialog> {
                 if (error) {
                   setState(() {});
                 } else {
-                  vm.editTodo(widget.todo.id, textController.text);
+                  vm.editTodo(widget.todo, textController.text);
                   Navigator.pop(context);
                 }
               },
@@ -127,7 +133,7 @@ class _ConfirmEditDialogState extends State<ConfirmEditDialog> {
 }
 
 class _EditViewModel extends Equatable {
-  final void Function(String id, String todoDesc) editTodo;
+  final void Function(Todo todo, String todoDesc) editTodo;
   const _EditViewModel({
     required this.editTodo,
   });
@@ -137,9 +143,9 @@ class _EditViewModel extends Equatable {
 
   static fromStore(Store<AppState> store) {
     return _EditViewModel(
-      editTodo: (String id, String todoDesc) {
+      editTodo: (Todo todo, String todoDesc) {
         store.dispatch(
-          EditTodoAction(id: id, todoDesc: todoDesc),
+          editTodoAndDispatch(todo, todoDesc),
         );
       },
     );

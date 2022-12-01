@@ -57,7 +57,7 @@ class _ViewModel extends Equatable {
   static fromStore(Store<AppState> store) {
     return _ViewModel(
       addTodo: (String todoDesc) => store.dispatch(
-        AddTodoAction(todoDesc: todoDesc),
+        addTodoAndDispatch(todoDesc),
       ),
     );
   }

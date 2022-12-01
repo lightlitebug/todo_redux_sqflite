@@ -32,7 +32,7 @@ class ShowTodos extends StatelessWidget {
               background: showBackground(0),
               secondaryBackground: showBackground(1),
               onDismissed: (_) {
-                vm.deleteTodo(todos[index].id);
+                vm.deleteTodo(todos[index].id!);
               },
               confirmDismiss: (_) {
                 return showDialog(
@@ -81,7 +81,7 @@ class ShowTodos extends StatelessWidget {
 
 class _ViewModel extends Equatable {
   final List<Todo> todos;
-  final void Function(String id) deleteTodo;
+  final void Function(int id) deleteTodo;
   const _ViewModel({
     required this.todos,
     required this.deleteTodo,
@@ -97,7 +97,7 @@ class _ViewModel extends Equatable {
         todoFilter: store.state.todoFilterState.todoFilter,
         searchTerm: store.state.todoSearchState.searchTerm,
       ),
-      deleteTodo: (String id) => store.dispatch(DeleteTodoAction(id: id)),
+      deleteTodo: (int id) => store.dispatch(deleteTodoAndDispatch(id)),
     );
   }
 
