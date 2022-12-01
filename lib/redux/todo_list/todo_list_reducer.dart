@@ -65,20 +65,39 @@ TodoListState addTodoFailedReducer(
   );
 }
 
+/////////////////////////////////////////////////////////////////
+/// Toggle todo related reducers
+/////////////////////////////////////////////////////////////////
+
 TodoListState toggleTodoReducer(
   TodoListState state,
   ToggleTodoAction action,
 ) {
-  final newTodos = state.todos.map((Todo todo) {
-    if (todo.id == action.id) {
-      final newTodo = todo.copyWith(completed: !todo.completed);
-      return newTodo;
-    } else {
-      return todo;
-    }
-  }).toList();
+  return state.copyWith(status: TodoListStatus.loading);
+}
 
-  return state.copyWith(todos: newTodos);
+TodoListState toggleTodoSucceededReducer(
+  TodoListState state,
+  ToggleTodoSucceededAction action,
+) {
+  final newTodos = state.todos
+      .map((todo) => todo.id == action.todo.id ? action.todo : todo)
+      .toList();
+  newTodos.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  return state.copyWith(
+    status: TodoListStatus.success,
+    todos: newTodos,
+  );
+}
+
+TodoListState toggleTodoFailedReducer(
+  TodoListState state,
+  ToggleTodoFailedAction action,
+) {
+  return state.copyWith(
+    status: TodoListStatus.failure,
+    error: action.error,
+  );
 }
 
 TodoListState editTodoReducer(

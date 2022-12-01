@@ -103,6 +103,55 @@ ThunkAction<AppState> addTodoAndDispatch(String todoDesc) {
   };
 }
 
+/////////////////////////////////////////////////////////////////
+/// Toggle todo related actions
+/////////////////////////////////////////////////////////////////
+
+class ToggleTodoAction {
+  ToggleTodoAction();
+
+  @override
+  String toString() => 'ToggleTodoAction()';
+}
+
+class ToggleTodoSucceededAction {
+  final Todo todo;
+  ToggleTodoSucceededAction({
+    required this.todo,
+  });
+
+  @override
+  String toString() => 'ToggleTodoSucceededAction(todo: $todo)';
+}
+
+class ToggleTodoFailedAction {
+  final CustomError error;
+  ToggleTodoFailedAction({
+    required this.error,
+  });
+
+  @override
+  String toString() => 'ToggleTodoFailedAction(error: $error)';
+}
+
+ThunkAction<AppState> toggleTodoAndDispatch(Todo todo) {
+  return (Store<AppState> store) async {
+    store.dispatch(ToggleTodoAction());
+
+    try {
+      final updatedTodo = todo.copyWith(
+        completed: !todo.completed,
+        updatedAt: DateTime.now(),
+      );
+
+      await TodosRepository.instance.toggleTodo(updatedTodo);
+      store.dispatch(ToggleTodoSucceededAction(todo: updatedTodo));
+    } on CustomError catch (error) {
+      store.dispatch(ToggleTodoFailedAction(error: error));
+    }
+  };
+}
+
 class EditTodoAction {
   final String id;
   final String todoDesc;
@@ -113,16 +162,6 @@ class EditTodoAction {
 
   @override
   String toString() => 'EditTodoAction(id: $id, todoDesc: $todoDesc)';
-}
-
-class ToggleTodoAction {
-  final String id;
-  ToggleTodoAction({
-    required this.id,
-  });
-
-  @override
-  String toString() => 'ToggleTodoAction(id: $id)';
 }
 
 class DeleteTodoAction {
