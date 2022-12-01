@@ -10,6 +10,7 @@ import 'redux/app_state.dart';
 late final Store<AppState> store;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   store = Store<AppState>(
     reducer,
     initialState: AppState.initial(),

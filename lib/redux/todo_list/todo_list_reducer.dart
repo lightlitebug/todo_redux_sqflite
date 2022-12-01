@@ -1,6 +1,5 @@
 import 'package:redux/redux.dart';
 
-import '../../models/todo_model.dart';
 import 'todo_list_action.dart';
 import 'todo_list_state.dart';
 

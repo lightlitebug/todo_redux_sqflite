@@ -144,6 +144,8 @@ ThunkAction<AppState> toggleTodoAndDispatch(Todo todo) {
         updatedAt: DateTime.now(),
       );
 
+      await Future.delayed(const Duration(seconds: 1));
+
       await TodosRepository.instance.toggleTodo(updatedTodo);
       store.dispatch(ToggleTodoSucceededAction(todo: updatedTodo));
     } on CustomError catch (error) {
