@@ -144,11 +144,16 @@ ThunkAction<AppState> toggleTodoAndDispatch(Todo todo) {
         updatedAt: DateTime.now(),
       );
 
+      store.dispatch(ToggleTodoSucceededAction(todo: updatedTodo));
       await Future.delayed(const Duration(seconds: 1));
+      throw const CustomError(
+        errorType: 'Optimistic Rendering',
+        message: 'Toggle Error',
+      );
 
       await TodosRepository.instance.toggleTodo(updatedTodo);
-      store.dispatch(ToggleTodoSucceededAction(todo: updatedTodo));
     } on CustomError catch (error) {
+      store.dispatch(ToggleTodoSucceededAction(todo: todo));
       store.dispatch(ToggleTodoFailedAction(error: error));
     }
   };
