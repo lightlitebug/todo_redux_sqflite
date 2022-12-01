@@ -100,20 +100,39 @@ TodoListState toggleTodoFailedReducer(
   );
 }
 
+/////////////////////////////////////////////////////////////////
+/// Edit todo related reducers
+/////////////////////////////////////////////////////////////////
+
 TodoListState editTodoReducer(
   TodoListState state,
   EditTodoAction action,
 ) {
-  final newTodos = state.todos.map((Todo todo) {
-    if (todo.id == action.id) {
-      final newTodo = todo.copyWith(todoDesc: action.todoDesc);
-      return newTodo;
-    } else {
-      return todo;
-    }
-  }).toList();
+  return state.copyWith(status: TodoListStatus.loading);
+}
 
-  return state.copyWith(todos: newTodos);
+TodoListState editTodoSucceededReducer(
+  TodoListState state,
+  EditTodoSucceededAction action,
+) {
+  final newTodos = state.todos
+      .map((todo) => todo.id == action.todo.id ? action.todo : todo)
+      .toList();
+  newTodos.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  return state.copyWith(
+    status: TodoListStatus.success,
+    todos: newTodos,
+  );
+}
+
+TodoListState editTodoFailedReducer(
+  TodoListState state,
+  EditTodoFailedAction action,
+) {
+  return state.copyWith(
+    status: TodoListStatus.failure,
+    error: action.error,
+  );
 }
 
 TodoListState deleteTodoReducer(
@@ -154,5 +173,11 @@ Reducer<TodoListState> todoListReducer = combineReducers<TodoListState>([
     toggleTodoFailedReducer,
   ),
   TypedReducer<TodoListState, EditTodoAction>(editTodoReducer),
+  TypedReducer<TodoListState, EditTodoSucceededAction>(
+    editTodoSucceededReducer,
+  ),
+  TypedReducer<TodoListState, EditTodoFailedAction>(
+    editTodoFailedReducer,
+  ),
   TypedReducer<TodoListState, DeleteTodoAction>(deleteTodoReducer),
 ]);
