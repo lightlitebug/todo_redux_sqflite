@@ -202,12 +202,48 @@ ThunkAction<AppState> editTodoAndDispatch(Todo todo, String todoDesc) {
   };
 }
 
+/////////////////////////////////////////////////////////////////
+/// Delete todo related actions
+/////////////////////////////////////////////////////////////////
+
 class DeleteTodoAction {
-  final String id;
-  DeleteTodoAction({
+  DeleteTodoAction();
+
+  @override
+  String toString() => 'DeleteTodoAction()';
+}
+
+class DeleteTodoSucceededAction {
+  final int id;
+  DeleteTodoSucceededAction({
     required this.id,
   });
 
   @override
-  String toString() => 'DeleteTodoAction(id: $id)';
+  String toString() => 'DeleteTodoSucceededAction(id: $id)';
+}
+
+class DeleteTodoFailedAction {
+  final CustomError error;
+  DeleteTodoFailedAction({
+    required this.error,
+  });
+
+  @override
+  String toString() => 'DeleteTodoFailedAction(error: $error)';
+}
+
+ThunkAction<AppState> deleteTodoAndDispatch(int id) {
+  return (Store<AppState> store) async {
+    store.dispatch(DeleteTodoAction());
+
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+
+      await TodosRepository.instance.deleteTodo(id);
+      store.dispatch(DeleteTodoSucceededAction(id: id));
+    } on CustomError catch (error) {
+      store.dispatch(DeleteTodoFailedAction(error: error));
+    }
+  };
 }
