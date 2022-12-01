@@ -147,6 +147,12 @@ Reducer<TodoListState> todoListReducer = combineReducers<TodoListState>([
     addTodoFailedReducer,
   ),
   TypedReducer<TodoListState, ToggleTodoAction>(toggleTodoReducer),
+  TypedReducer<TodoListState, ToggleTodoSucceededAction>(
+    toggleTodoSucceededReducer,
+  ),
+  TypedReducer<TodoListState, ToggleTodoFailedAction>(
+    toggleTodoFailedReducer,
+  ),
   TypedReducer<TodoListState, EditTodoAction>(editTodoReducer),
   TypedReducer<TodoListState, DeleteTodoAction>(deleteTodoReducer),
 ]);
