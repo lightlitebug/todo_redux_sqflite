@@ -4,6 +4,36 @@ import '../../models/todo_model.dart';
 import 'todo_list_action.dart';
 import 'todo_list_state.dart';
 
+/////////////////////////////////////////////////////////////////
+/// Get todo list related reducers
+/////////////////////////////////////////////////////////////////
+TodoListState getTodoListReducer(
+  TodoListState state,
+  GetTodoListAction action,
+) {
+  return state.copyWith(status: TodoListStatus.loading);
+}
+
+TodoListState getTodoListSucceededReducer(
+  TodoListState state,
+  GetTodoListSucceededAction action,
+) {
+  return state.copyWith(
+    status: TodoListStatus.success,
+    todos: action.todos,
+  );
+}
+
+TodoListState getTodoListFailedReducer(
+  TodoListState state,
+  GetTodoListFailedAction action,
+) {
+  return state.copyWith(
+    status: TodoListStatus.failure,
+    error: action.error,
+  );
+}
+
 TodoListState addTodoReducer(
   TodoListState state,
   AddTodoAction action,
@@ -60,6 +90,13 @@ TodoListState deleteTodoReducer(
 }
 
 Reducer<TodoListState> todoListReducer = combineReducers<TodoListState>([
+  TypedReducer<TodoListState, GetTodoListAction>(getTodoListReducer),
+  TypedReducer<TodoListState, GetTodoListSucceededAction>(
+    getTodoListSucceededReducer,
+  ),
+  TypedReducer<TodoListState, GetTodoListFailedAction>(
+    getTodoListFailedReducer,
+  ),
   TypedReducer<TodoListState, AddTodoAction>(addTodoReducer),
   TypedReducer<TodoListState, ToggleTodoAction>(toggleTodoReducer),
   TypedReducer<TodoListState, EditTodoAction>(editTodoReducer),
