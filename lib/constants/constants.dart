@@ -17,4 +17,14 @@ class TodoTable {
     columnCreatedAt,
     columnUpdatedAt,
   ];
+
+  static const String createTodoTable = """
+CREATE TABLE ${TodoTable.tableName} ( 
+  ${TodoTable.columnId} integer primary key autoincrement, 
+  ${TodoTable.columnTodoDesc} text not null,
+  ${TodoTable.columnCompleted} boolean not null,
+  ${TodoTable.columnCreatedAt} text not null,
+  ${TodoTable.columnUpdatedAt} text not null
+  )
+""";
 }
